@@ -713,9 +713,13 @@ MaybeHandle<Object> Module::Evaluate(Handle<Module> module,
              ->BooleanValue());
 
   MaybeTransitionComponent(module, stack, kEvaluated);
-  return handle(
+  MaybeHandle<Object> exported_obj = handle(
       static_cast<JSIteratorResult*>(JSObject::cast(*result))->value(),
       isolate);
+  if (!exported_obj.is_null()) {
+    isolate->RunModuleLoadHook(exported_obj.ToHandleChecked(), module);
+  }
+  return exported_obj;
 }
 
 namespace {

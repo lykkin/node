@@ -8887,6 +8887,11 @@ void Isolate::SetPromiseHook(PromiseHook hook) {
   isolate->SetPromiseHook(hook);
 }
 
+void Isolate::SetModuleLoadHook(ModuleLoadHook hook) {
+  i::Isolate* isolate = reinterpret_cast<i::Isolate*>(this);
+  isolate->SetModuleLoadHook(hook);
+}
+
 void Isolate::SetPromiseRejectCallback(PromiseRejectCallback callback) {
   if (callback == nullptr) return;
   i::Isolate* isolate = reinterpret_cast<i::Isolate*>(this);

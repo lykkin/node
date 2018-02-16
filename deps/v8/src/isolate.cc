@@ -2410,6 +2410,7 @@ Isolate::Isolate(bool enable_serializer)
       rail_mode_(PERFORMANCE_ANIMATION),
       promise_hook_or_debug_is_active_(false),
       promise_hook_(nullptr),
+      module_load_hook_(nullptr),
       load_start_time_ms_(0),
       serializer_enabled_(enable_serializer),
       has_fatal_error_(false),
@@ -3570,6 +3571,16 @@ void Isolate::RunPromiseHook(PromiseHookType type, Handle<JSPromise> promise,
   if (promise_hook_ == nullptr) return;
   promise_hook_(type, v8::Utils::PromiseToLocal(promise),
                 v8::Utils::ToLocal(parent));
+}
+
+void Isolate::SetModuleLoadHook(ModuleLoadHook hook) {
+  module_load_hook_ = hook;
+}
+
+void Isolate::RunModuleLoadHook(Handle<Object> exported_module, Handle<Module> module) {
+  if (module_load_hook_ == nullptr) return;
+  v8::Local<v8::Context> api_context = v8::Utils::ToLocal(native_context());
+  module_load_hook_(api_context, v8::Utils::ToLocal(exported_module), v8::Utils::ToLocal(module));
 }
 
 void Isolate::SetPromiseRejectCallback(PromiseRejectCallback callback) {

@@ -796,6 +796,36 @@ void ModuleWrap::SetInitializeImportMetaObjectCallback(
       HostInitializeImportMetaObjectCallback);
 }
 
+void ModuleWrap::AddModuleLoadHook(
+    const FunctionCallbackInfo<Value>& args) {
+  Environment* env = Environment::GetCurrent(args);
+  Isolate* isolate = env->isolate();
+  if (!args[0]->IsFunction()) {
+    env->ThrowError("first argument is not a function");
+    return;
+  }
+
+  Local<Function> module_load_callback = args[0].As<Function>();
+  env->set_module_load_callback(module_load_callback);
+
+  isolate->SetModuleLoadHook(ModuleLoadHookCallback);
+
+}
+
+void ModuleWrap::ModuleLoadHookCallback(
+    Local<Context> context, Local<Value> exported_module, Local<Module> module) {
+  Isolate* isolate = context->GetIsolate();
+  Environment* env = Environment::GetCurrent(context);
+
+  Local<String> url =
+      env->module_map.find(module->GetIdentityHash())->second->url_.Get(isolate);
+  Local<Function> callback =
+      env->module_load_callback();
+  Local<Value> args[] = {exported_module, url};
+  callback->Call(context, Undefined(isolate), arraysize(args), args)
+      .ToLocalChecked();
+}
+
 void ModuleWrap::Initialize(Local<Object> target,
                             Local<Value> unused,
                             Local<Context> context) {
@@ -816,6 +846,7 @@ void ModuleWrap::Initialize(Local<Object> target,
                       GetStaticDependencySpecifiers);
 
   target->Set(FIXED_ONE_BYTE_STRING(isolate, "ModuleWrap"), tpl->GetFunction());
+  env->SetMethod(target, "addModuleLoadHook", ModuleWrap::AddModuleLoadHook);
   env->SetMethod(target, "resolve", node::loader::ModuleWrap::Resolve);
   env->SetMethod(target,
                  "setImportModuleDynamicallyCallback",

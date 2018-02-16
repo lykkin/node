@@ -32,6 +32,10 @@ class ModuleWrap : public BaseObject {
       v8::Local<v8::Context> context,
       v8::Local<v8::Module> module,
       v8::Local<v8::Object> meta);
+  static void ModuleLoadHookCallback(
+      v8::Local<v8::Context> context,
+      v8::Local<v8::Value> exported_module,
+      v8::Local<v8::Module> module);
 
  private:
   ModuleWrap(Environment* env,
@@ -47,6 +51,7 @@ class ModuleWrap : public BaseObject {
   static void Namespace(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void GetStatus(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void GetError(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void AddModuleLoadHook(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void GetStaticDependencySpecifiers(
       const v8::FunctionCallbackInfo<v8::Value>& args);
 

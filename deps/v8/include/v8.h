@@ -6319,6 +6319,8 @@ enum class PromiseHookType { kInit, kResolve, kBefore, kAfter };
 typedef void (*PromiseHook)(PromiseHookType type, Local<Promise> promise,
                             Local<Value> parent);
 
+typedef void (*ModuleLoadHook)(Local<Context> context, Local<Value> exported_obj, Local<Module> module);
+
 // --- Promise Reject Callback ---
 enum PromiseRejectEvent {
   kPromiseRejectWithNoHandler = 0,
@@ -7510,6 +7512,11 @@ class V8_EXPORT Isolate {
    * events.
    */
   void SetPromiseHook(PromiseHook hook);
+
+  /**
+   * Set the ModuleLoadHook callback for module loading events.
+   */
+  void SetModuleLoadHook(ModuleLoadHook hook);
 
   /**
    * Set callback to notify about promise reject with no handler, or

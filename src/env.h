@@ -307,6 +307,7 @@ struct PackageConfig {
   V(fdclose_constructor_template, v8::ObjectTemplate)                         \
   V(host_import_module_dynamically_callback, v8::Function)                    \
   V(host_initialize_import_meta_object_callback, v8::Function)                \
+  V(module_load_callback, v8::Function)                                       \
   V(http2ping_constructor_template, v8::ObjectTemplate)                       \
   V(http2stream_constructor_template, v8::ObjectTemplate)                     \
   V(http2settings_constructor_template, v8::ObjectTemplate)                   \

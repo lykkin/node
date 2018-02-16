@@ -1239,6 +1239,9 @@ class Isolate {
   void RunPromiseHook(PromiseHookType type, Handle<JSPromise> promise,
                       Handle<Object> parent);
 
+  void SetModuleLoadHook(ModuleLoadHook hook);
+  void RunModuleLoadHook(Handle<Object> exported_obj, Handle<Module> module);
+
   void AddDetachedContext(Handle<Context> context);
   void CheckDetachedContextsAfterGC();
 
@@ -1530,6 +1533,7 @@ class Isolate {
   base::AtomicValue<RAILMode> rail_mode_;
   bool promise_hook_or_debug_is_active_;
   PromiseHook promise_hook_;
+  ModuleLoadHook module_load_hook_;
   HostImportModuleDynamicallyCallback host_import_module_dynamically_callback_;
   HostInitializeImportMetaObjectCallback
       host_initialize_import_meta_object_callback_;
